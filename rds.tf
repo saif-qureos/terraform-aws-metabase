@@ -1,6 +1,6 @@
 resource "aws_db_parameter_group" "aurora-pg" {
   name   = "aurora-pg"
-  family = "mysql5.6"
+  family = "aurora5.6"
 
   parameter {
     name  = "innodb_file_format "
