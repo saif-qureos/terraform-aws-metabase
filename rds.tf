@@ -1,29 +1,10 @@
-resource "aws_db_parameter_group" "aurora-pg" {
-  name   = "aurora-pg"
-  family = "aurora5.6"
-
-  parameter {
-    name  = "innodb_file_format "
-    value = "Barracuda"
-  }
-
-  parameter {
-    name  = "innodb_file_per_table"
-    value = "1"
-  }
-  
-  parameter {
-    name  = "innodb_large_prefix"
-    value = "1"
-  }
-}
-
 resource "aws_rds_cluster" "this" {
   cluster_identifier_prefix       = "${var.id}-"
   final_snapshot_identifier       = "${var.id}-${formatdate("YYYYMMDDhhmmss", timestamp())}"
   copy_tags_to_snapshot           = true
   engine                          = "aurora"
   engine_mode                     = "serverless"
+  engine_version                  = "5.7.12"
   database_name                   = "metabase"
   master_username                 = "root"
   master_password                 = random_string.this.result
@@ -31,7 +12,6 @@ resource "aws_rds_cluster" "this" {
   snapshot_identifier             = var.snapshot_identifier
   vpc_security_group_ids          = [aws_security_group.rds.id]
   db_subnet_group_name            = aws_db_subnet_group.this.id
-  db_cluster_parameter_group_name = aws_db_parameter_group.aurora-pg.name
   deletion_protection             = var.protection
   enable_http_endpoint            = true
   tags                            = var.tags
