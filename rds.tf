@@ -4,7 +4,7 @@ resource "aws_rds_cluster" "this" {
   copy_tags_to_snapshot           = true
   engine                          = "aurora"
   engine_mode                     = "serverless"
-  engine_version                  = "5.7.serverless_mysql_aurora.2.08.3"
+  engine_version                  = "5.7.mysql_aurora.2.08.3"
   database_name                   = "metabase"
   master_username                 = "root"
   master_password                 = random_string.this.result
@@ -12,6 +12,7 @@ resource "aws_rds_cluster" "this" {
   snapshot_identifier             = var.snapshot_identifier
   vpc_security_group_ids          = [aws_security_group.rds.id]
   db_subnet_group_name            = aws_db_subnet_group.this.id
+  db_cluster_parameter_group_name = "default.aurora-mysql5.7"
   deletion_protection             = var.protection
   allow_major_version_upgrade = true
   enable_http_endpoint            = true
