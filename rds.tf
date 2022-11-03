@@ -46,6 +46,10 @@ resource "aws_rds_cluster" "this" {
     create_before_destroy = true
     ignore_changes        = [snapshot_identifier, final_snapshot_identifier]
   }
+
+  depends_on = [
+    aws_db_parameter_group.aurora-pg
+  ]
 }
 
 resource "random_string" "this" {
