@@ -1,10 +1,18 @@
+resource "aws_rds_cluster_instance" "this" {
+  cluster_identifier = aws_rds_cluster.this.id
+  instance_class     = "db.serverless"
+  engine             = aws_rds_cluster.this.engine
+  engine_version     = aws_rds_cluster.this.engine_version
+}
+
+
 resource "aws_rds_cluster" "this" {
   cluster_identifier_prefix       = "${var.id}-"
   final_snapshot_identifier       = "${var.id}-${formatdate("YYYYMMDDhhmmss", timestamp())}"
   copy_tags_to_snapshot           = true
-  engine                          = "aurora"
-  engine_mode                     = "serverless"
-  engine_version                  = "5.7.mysql_aurora.2.08.3"
+  engine                          = "aurora-postgresql"
+  engine_mode                     = "provisioned"
+  engine_version                  = "13.6"
   database_name                   = "metabase"
   master_username                 = "root"
   master_password                 = random_string.this.result
@@ -12,17 +20,10 @@ resource "aws_rds_cluster" "this" {
   snapshot_identifier             = var.snapshot_identifier
   vpc_security_group_ids          = [aws_security_group.rds.id]
   db_subnet_group_name            = aws_db_subnet_group.this.id
-  db_cluster_parameter_group_name = "default.aurora-mysql5.7"
   deletion_protection             = var.protection
-  allow_major_version_upgrade = true
+  allow_major_version_upgrade     = true
   enable_http_endpoint            = true
   tags                            = var.tags
-
-  scaling_configuration {
-    auto_pause   = var.auto_pause
-    min_capacity = 1
-    max_capacity = var.max_capacity
-  }
 
   lifecycle {
     create_before_destroy = true
